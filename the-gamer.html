@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The Gamer - AnimeGold</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      background: linear-gradient(-45deg, #1a0033, #2d0052, #0a0a2e, #16213e);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+      font-family: 'Arial', sans-serif;
+      background-attachment: fixed;
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      background: linear-gradient(135deg, #ff9800, #ffb84d, #ff6b00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 30px;
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 152, 0, 0.5)); }
+      50% { filter: drop-shadow(0 0 15px rgba(255, 152, 0, 0.8)); }
+    }
+
+    .status-info {
+      background: rgba(20, 20, 40, 0.85);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 152, 0, 0.3);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(255, 152, 0, 0.2);
+    }
+
+    .status-info p {
+      color: #ffb84d;
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .episodes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .episode-btn {
+      background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.05));
+      border: 2px solid rgba(255, 152, 0, 0.3);
+      padding: 20px;
+      border-radius: 10px;
+      color: #ffb84d;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
+    }
+
+    .episode-btn:hover:not(.locked) {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+      border-color: #ff9800;
+      background: linear-gradient(135deg, rgba(255, 152, 0, 0.2), rgba(255, 152, 0, 0.1));
+    }
+
+    .episode-btn.active {
+      background: linear-gradient(135deg, #ff9800, #ffb84d);
+      color: #000;
+      border-color: #ff9800;
+    }
+
+    .episode-btn.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+      color: #95a5a6;
+    }
+
+    .episode-btn.locked:hover {
+      transform: none;
+      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
+    }
+
+    .player-section {
+      background: rgba(20, 20, 40, 0.85);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 152, 0, 0.3);
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(255, 152, 0, 0.2);
+    }
+
+    .episode-title {
+      color: #ffb84d;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .video-placeholder {
+      width: 100%;
+      height: 400px;
+      background: #111;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff9800;
+      font-size: 18px;
+      margin-bottom: 20px;
+      border: 2px solid rgba(255, 152, 0, 0.3);
+    }
+
+    .stats {
+      background: rgba(255, 152, 0, 0.1);
+      border: 1px solid rgba(255, 152, 0, 0.3);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .stats p {
+      color: #ffb84d;
+      margin: 5px 0;
+      text-align: left;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: linear-gradient(135deg, #ff9800, #ffb84d);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+      font-size: 16px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(255, 152, 0, 0.6);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    button.stop-btn {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: #fff;
+    }
+
+    button.back-btn {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: #fff;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 152, 0, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff9800, #ffb84d);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+      padding: 15px 25px;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: bold;
+      z-index: 1000;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .episode-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      text-decoration: none;
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, arrayUnion } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6qQybRVw4nlwGA-Kp8d6kCqOhdqo11Aw",
+      authDomain: "animegold-bf2a7.firebaseapp.com",
+      projectId: "animegold-bf2a7",
+      storageBucket: "animegold-bf2a7.firebasestorage.app",
+      messagingSenderId: "1055086176557",
+      appId: "1:1055086176557:web:aca8f68412e95ef369cba4",
+      measurementId: "G-J9LX9WMPJK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let userRef, userData = {};
+    let currentEpisode = null;
+    let isWatching = false;
+    let watchTimer = null;
+    let watchDuration = 0;
+    let totalPoints = 0;
+    let unlockedEpisodes = [1];
+
+    const TOTAL_EPISODES = 35;
+    const POINTS_PER_MINUTE = 0.001;
+    const SERIES_NAME = "The Gamer";
+
+    function showNotification(message) {
+      const notif = document.createElement('div');
+      notif.className = 'notification';
+      notif.textContent = message;
+      document.body.appendChild(notif);
+      setTimeout(() => notif.remove(), 3000);
+    }
+
+    function updateUI() {
+      const pointsDisplay = document.getElementById('currentPoints');
+      if (pointsDisplay) pointsDisplay.textContent = totalPoints.toFixed(4);
+      
+      const watchTimeDisplay = document.getElementById('watchTime');
+      if (watchTimeDisplay) watchTimeDisplay.textContent = watchDuration;
+    }
+
+    function createEpisodeButtons() {
+      const grid = document.getElementById('episodesGrid');
+      grid.innerHTML = '';
+
+      for (let i = 1; i <= TOTAL_EPISODES; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'episode-btn';
+        btn.textContent = i;
+        
+        if (!unlockedEpisodes.includes(i)) {
+          btn.classList.add('locked');
+          btn.disabled = true;
+        } else {
+          btn.onclick = () => selectEpisode(i);
+        }
+        
+        grid.appendChild(btn);
+      }
+    }
+
+    window.selectEpisode = async (episodeNum) => {
+      if (isWatching) {
+        alert("Stop current episode before selecting another!");
+        return;
+      }
+
+      currentEpisode = episodeNum;
+      watchDuration = 0;
+      totalPoints = 0;
+
+      document.querySelectorAll('.episode-btn').forEach((btn, idx) => {
+        if (idx + 1 === episodeNum) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      document.getElementById('episodeTitle').textContent = `Episode ${episodeNum}`;
+      document.getElementById('currentEpisodeNum').textContent = episodeNum;
+      document.getElementById('watchTime').textContent = '0';
+      document.getElementById('currentPoints').textContent = '0.0000';
+      
+      const episodeLink = document.getElementById('episodeLink');
+      episodeLink.href = `https://trimz.tv/the-gamer?ep=${episodeNum}`;
+      
+      updateProgressBar();
+      showNotification(`✅ Episode ${episodeNum} Selected - Click Play to Start Earning`);
+    };
+
+    window.startWatching = async () => {
+      if (!currentEpisode) {
+        alert("Please select an episode first!");
+        return;
+      }
+
+      if (isWatching) {
+        alert("Already watching!");
+        return;
+      }
+
+      isWatching = true;
+      watchDuration = 0;
+      totalPoints = 0;
+
+      showNotification(`🎬 Watching Episode ${currentEpisode} - Earning 0.001 points per minute`);
+
+      watchTimer = setInterval(async () => {
+        watchDuration++;
+        totalPoints = watchDuration * POINTS_PER_MINUTE;
+        updateUI();
+        updateProgressBar();
+
+        try {
+          await setDoc(userRef, {
+            lastActivityTime: new Date().toISOString(),
+            currentlyWatching: {
+              series: SERIES_NAME,
+              episode: currentEpisode,
+              watchedMinutes: watchDuration,
+              pointsEarned: totalPoints
+            }
+          }, { merge: true });
+        } catch (err) {
+          console.error("Error saving progress:", err);
+        }
+      }, 60000);
+
+      document.getElementById('playBtn').disabled = true;
+      document.getElementById('stopBtn').disabled = false;
+    };
+
+    window.stopWatching = async () => {
+      if (!isWatching) return;
+
+      clearInterval(watchTimer);
+      isWatching = false;
+
+      if (totalPoints > 0) {
+        try {
+          await setDoc(userRef, {
+            watchSessions: arrayUnion({
+              series: SERIES_NAME,
+              episode: currentEpisode,
+              watchedMinutes: watchDuration,
+              pointsEarned: totalPoints,
+              timestamp: new Date().toISOString()
+            })
+          }, { merge: true });
+
+          // Unlock next episode after 1 minute
+          if (currentEpisode < TOTAL_EPISODES && !unlockedEpisodes.includes(currentEpisode + 1)) {
+            setTimeout(() => {
+              unlockedEpisodes.push(currentEpisode + 1);
+              createEpisodeButtons();
+              showNotification(`🔓 Episode ${currentEpisode + 1} Unlocked!`);
+            }, 60000);
+          }
+
+          showNotification(`✅ Saved! Earned ${totalPoints.toFixed(4)} points`);
+        } catch (err) {
+          console.error("Error saving session:", err);
+        }
+      }
+
+      document.getElementById('playBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = true;
+    };
+
+    function updateProgressBar() {
+      const maxMinutes = 60;
+      const progress = Math.min((watchDuration / maxMinutes) * 100, 100);
+      document.getElementById('progressFill').style.width = progress + '%';
+    }
+
+    window.goBack = () => {
+      if (isWatching) {
+        if (confirm("Stop watching before going back?")) {
+          stopWatching();
+          window.location.href = "earn.html";
+        }
+      } else {
+        window.location.href = "earn.html";
+      }
+    };
+
+    onAuthStateChanged(auth, async (u) => {
+      if (u) {
+        const usersSnap = await getDocs(query(collection(db, "users"), where("uid", "==", u.uid)));
+        
+        if (!usersSnap.empty) {
+          const userDoc = usersSnap.docs[0];
+          userRef = doc(db, "users", userDoc.id);
+          userData = userDoc.data();
+
+          createEpisodeButtons();
+          document.getElementById('greeting').textContent = `Hello, ${userData.userName || 'User'}!`;
+        } else {
+          window.location.href = "index.html";
+        }
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    window.logout = () => {
+      if (isWatching) stopWatching();
+      signOut(auth).then(() => window.location.href = "index.html");
+    };
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1 id="greeting">Loading...</h1>
+
+    <div class="status-info">
+      <p>⏱️ Watch Time: <strong id="watchTime">0</strong> minutes</p>
+      <p>💰 Points Earned: <strong id="currentPoints">0.0000</strong></p>
+      <p>📊 Earning Rate: 0.001 points/minute</p>
+    </div>
+
+    <h2 style="color: #ffb84d; margin-bottom: 20px;">📺 Episodes (35 Total)</h2>
+    <div class="episodes-grid" id="episodesGrid"></div>
+
+    <div class="player-section">
+      <div class="episode-title" id="episodeTitle">Select an Episode</div>
+      
+      <a id="episodeLink" href="https://trimz.tv/the-gamer?ep=1" target="_blank" class="episode-link">
+        <div class="video-placeholder">👁️ Click to Watch Episode (Opens in New Tab)</div>
+      </a>
+
+      <div class="stats">
+        <p>📍 <strong>Series:</strong> The Gamer</p>
+        <p>🎬 <strong>Episode:</strong> <span id="currentEpisodeNum">-</span></p>
+        <p>⏱️ <strong>Duration:</strong> <span id="watchTime">0</span> minutes</p>
+        <p>💎 <strong>Earned:</strong> <span id="currentPoints">0.0000</span> points</p>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="controls">
+        <button id="playBtn" onclick="startWatching()">▶️ Play & Earn</button>
+        <button id="stopBtn" onclick="stopWatching()" class="stop-btn" disabled>⏹️ Stop</button>
+        <button onclick="goBack()" class="back-btn">← Back to Series</button>
+        <button onclick="logout()" class="back-btn">Logout</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
