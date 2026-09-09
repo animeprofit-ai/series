@@ -94,17 +94,6 @@
       border-color: #ff9800;
     }
 
-    .episode-btn.locked {
-      opacity: 0.5;
-      cursor: not-allowed;
-      color: #95a5a6;
-    }
-
-    .episode-btn.locked:hover {
-      transform: none;
-      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
-    }
-
     .player-section {
       background: rgba(20, 20, 40, 0.85);
       backdrop-filter: blur(10px);
@@ -132,6 +121,7 @@
       color: #ff9800;
       font-size: 18px;
       margin-bottom: 20px;
+      border: 2px solid rgba(255, 152, 0, 0.3);
     }
 
     .stats {
@@ -172,6 +162,11 @@
     button:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 25px rgba(255, 152, 0, 0.6);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     button.stop-btn {
@@ -216,6 +211,12 @@
     @keyframes slideIn {
       from { transform: translateX(400px); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
+    }
+
+    .episode-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      text-decoration: none;
     }
   </style>
   <script type="module">
@@ -297,8 +298,14 @@
       });
 
       document.getElementById('episodeTitle').textContent = `Episode ${episodeNum}`;
+      document.getElementById('currentEpisodeNum').textContent = episodeNum;
       document.getElementById('watchTime').textContent = '0';
       document.getElementById('currentPoints').textContent = '0.0000';
+      
+      // Set episode link with dynamic ep parameter
+      const episodeLink = document.getElementById('episodeLink');
+      episodeLink.href = `https://trimz.tv/system-analyzer?ep=${episodeNum}`;
+      
       updateProgressBar();
 
       showNotification(`✅ Episode ${episodeNum} Selected - Click Play to Start Earning`);
@@ -433,7 +440,10 @@
 
     <div class="player-section">
       <div class="episode-title" id="episodeTitle">Select an Episode</div>
-      <div class="video-placeholder">Episode Video Player</div>
+      
+      <a id="episodeLink" href="https://trimz.tv/system-analyzer?ep=1" target="_blank" class="episode-link">
+        <div class="video-placeholder">👁️ Click to Watch Episode (Opens in New Tab)</div>
+      </a>
 
       <div class="stats">
         <p>📍 <strong>Series:</strong> System Analyzer</p>
